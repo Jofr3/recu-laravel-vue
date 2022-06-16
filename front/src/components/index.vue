@@ -1,8 +1,42 @@
 <template>
   <div class="index h-full bg-black p-6 flex">
-    <div class="h-full w-1/2 bg-white opacity-10 rounded mr-3">
+    <div class="h-full w-1/2 bg-white bg-opacity-10 rounded mr-3 flex flex-col justify-center items-center">
+      <div class="flex flex-col h-1/2 w-1/2 bg-white bg-opacity-10 rounded p-5 mb-1">
+        <h1 class="text-white text-3xl mb-7">Crea usuaris</h1>
+        <input class="my-2 rounded bg-opacity-20 bg-white p-2 focus:outline-0 text-white" type="text" placeholder="nom"
+               v-model="form.name">
+        <input class="my-2 rounded bg-opacity-20 bg-white p-2 focus:outline-0 text-white" type="text"
+               v-model="form.email"
+               placeholder="email">
+        <input class="my-2 rounded bg-opacity-20 bg-white p-2 focus:outline-0 text-white" type="password"
+               v-model="form.password"
+               placeholder="contrassenya">
+        <button @click="handleSubmit" class="bg-white bg-opacity-50 rounded p-2 px-3 w-fit mt-5">ok</button>
+      </div>
+      <p v-for="error in errors" class="p-1.5 m-1 w-1/2 bg-red-500 bg-opacity-40 rounded text-white text-opacity-40"
+         :key="error.id">
+        {{ error }}
+      </p>
     </div>
-    <div class="h-full w-1/2 bg-white opacity-10 rounded ml-3">
+    <div class="h-full w-1/2 bg-white bg-opacity-10 rounded ml-3 flex flex-col justify-center p-5">
+      <div v-for="user in users" class="flex flex-row w-full h-14 my-1" :key="user.id">
+        <div class="w-full bg-white bg-opacity-10 rounded flex flex-row p-4 text-white">
+          <p class="w-14 mr-10">
+            {{ user.id }}
+          </p>
+          <p class="mr-20">
+            {{ user.name }}
+          </p>
+          <p>
+            {{ user.email }}
+          </p>
+        </div>
+        <button @click="del(user.id)" class="w-16 bg-red-500 bg-opacity-40 ml-2 rounded"><i
+            class="bi bi-trash text-white text-2xl"></i>
+        </button>
+        <button class="w-16 bg-blue-500 bg-opacity-40 ml-2 rounded"><i class="bi bi-pen text-white text-2xl"></i>
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -14,13 +48,53 @@ export default {
   name: 'HelloWorld',
   data() {
     return {
-      resp: null
+      users: [],
+      errors: [],
+      form: {
+        name: null,
+        email: null,
+        password: null
+      }
+    }
+  },
+  methods: {
+    handleSubmit: function () {
+      this.errors = [];
+      let regex = /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/;
+
+      if (!this.form.name) {
+        this.errors.push('El nom no pot estar vuit');
+      }
+      if (!this.form.email) {
+        this.errors.push('El email no pot estar vuit');
+      } else if (!regex.test(this.form.email)) {
+        this.errors.push('El email no es valid');
+      }
+      if (!this.form.password) {
+        this.errors.push('La contrasenya no pot estar buida');
+      }
+      console.log(this.errors);
+      if (this.errors.length === 0) {
+        axios
+            .post('http://localhost/api/users/add', this.form)
+            .then(response => (this.users.push(response.data)));
+        this.form.name = null;
+        this.form.email = null;
+        this.form.password = null;
+      }
+    },
+    del: function (id) {
+      axios
+          .delete(`http://localhost/api/users/del/${id}`);
+
+      let i = this.users.map(item => item.id).indexOf(id);
+      this.users.splice(i, 1);
     }
   },
   mounted() {
     axios
-        .get('http://localhost/api/works')
-        .then(response => (this.resp = response.data))
+        .get('http://localhost/api/users/all')
+        .then(response => (this.users = response.data))
   }
 }
 </script>
