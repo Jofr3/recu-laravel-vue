@@ -17,6 +17,7 @@ Route::controller(ControllerUsers::class)->group(function () {
     Route::get('/users/all', 'all');
     Route::post('/users/add', 'add');
     Route::delete('/users/del/{id}', 'del');
+    Route::put('/users/edit/{id}', 'edit');
 });
 
 
