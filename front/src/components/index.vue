@@ -51,7 +51,7 @@
 import axios from 'axios';
 
 export default {
-  name: 'IndexUsers',
+  name: 'UsersCrud',
   data() {
     return {
       edit: false,
@@ -71,10 +71,10 @@ export default {
       let regex = /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/;
 
       if (!this.form.name) {
-        this.errors.push('El nom no pot estar vuit');
+        this.errors.push('El nom no pot estar buit');
       }
       if (!this.form.email) {
-        this.errors.push('El email no pot estar vuit');
+        this.errors.push('El email no pot estar buit');
       } else if (!regex.test(this.form.email)) {
         this.errors.push('El email no es valid');
       }
